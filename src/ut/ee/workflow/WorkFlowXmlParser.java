@@ -131,7 +131,7 @@ public class WorkFlowXmlParser {
 	}
 
 	private void readWorkFlowSequence(XmlPullParser parser , String previousTag, int TAGTYPE) throws XmlPullParserException, IOException{
-
+		boolean flagSkip = false;
 		while(parser.next() != TAGTYPE){
 			if(parser.getEventType() != XmlPullParser.START_TAG){
 				continue;
@@ -150,6 +150,7 @@ public class WorkFlowXmlParser {
 				break;
 			case "flow":
 				readFlow(parser,previousTag);
+				flagSkip = true;
 				break;
 			case "invoke":
 				currentTag = readInvoke(parser);
@@ -158,22 +159,25 @@ public class WorkFlowXmlParser {
 				break;
 			}
 			
+
 			// check the first run
 			if(previousTag.equals("Beginnering")){
 				graphMap.put("Beginnering", new ArrayList<String>(Arrays.asList(currentTag)));
 				previousTag = currentTag;
 				continue;
 			}		
-			
-			if(graphMap.containsKey(previousTag)){
-				ArrayList<String> old = graphMap.get(previousTag);
-				old.add(currentTag);
-				ArrayList<String> newList = new ArrayList<String>(old);
-				graphMap.put(previousTag, newList);
-			}else{
-				graphMap.put(previousTag, new ArrayList<String>(Arrays.asList(currentTag)));
+			if (!flagSkip) {
+				if (graphMap.containsKey(previousTag)) {
+					ArrayList<String> old = graphMap.get(previousTag);
+					old.add(currentTag);
+					ArrayList<String> newList = new ArrayList<String>(old);
+					graphMap.put(previousTag, newList);
+				} else {
+					graphMap.put(previousTag,
+							new ArrayList<String>(Arrays.asList(currentTag)));
+				}
 			}
-			
+			flagSkip = false;
 			previousTag = currentTag;
 		}
 	}
