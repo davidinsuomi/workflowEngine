@@ -1,6 +1,5 @@
 package ut.ee.workflow;
 
-import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -8,7 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.xml.sax.Parser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -26,6 +24,7 @@ public class WorkFlowXmlParser {
 	private WorkFlowProcess workFlowProcess = new WorkFlowProcess();
 	private Map<String,ArrayList<String>> graphMap = new HashMap<String,ArrayList<String>>();
 	private Map<String,WorkFlowActivity> activityMap = new HashMap<String,WorkFlowActivity>();
+	private Map<String,ArrayList<String>> flowlastTags = new HashMap<String,ArrayList<String>>();
 	private String previousNodeName;
 	private String NodeName;
 	private static final String ns = null;
@@ -70,11 +69,28 @@ public class WorkFlowXmlParser {
 
 		}
 		
+		addMissingFlowTags();
+	
 		workFlowProcess.activityMap = activityMap;
 		workFlowProcess.graphMap = graphMap;
 		System.out.println();
 
 		
+	}
+	
+	private void addMissingFlowTags(){
+		for(Map.Entry<String, ArrayList<String>> entry : flowlastTags.entrySet()){
+			String key = entry.getKey();
+			ArrayList<String> flowLastTagNeedToAdd = entry.getValue();
+			
+			if(graphMap.containsKey(key)){
+				ArrayList<String> flowFollowingTag = graphMap.get(key);
+				for(String s : flowLastTagNeedToAdd){
+					graphMap.put(s, flowFollowingTag);
+				}
+				
+			}
+		}
 	}
 	
 	private ArrayList<PartnerLink> readPartnerLink(XmlPullParser parser) throws XmlPullParserException , IOException{
@@ -130,7 +146,7 @@ public class WorkFlowXmlParser {
 		return variables;
 	}
 
-	private void readWorkFlowSequence(XmlPullParser parser , String previousTag, int TAGTYPE) throws XmlPullParserException, IOException{
+	private String readWorkFlowSequence(XmlPullParser parser , String previousTag, int TAGTYPE) throws XmlPullParserException, IOException{
 		boolean flagSkip = false;
 		while(parser.next() != TAGTYPE){
 			if(parser.getEventType() != XmlPullParser.START_TAG){
@@ -144,6 +160,7 @@ public class WorkFlowXmlParser {
 //			}else if(tagName.equals("invoke")){
 //				currentTag = readInvoke(parser);
 //			}
+			
 			switch(tagName){
 			case "assign":
 				currentTag = readAssign(parser);
@@ -180,23 +197,26 @@ public class WorkFlowXmlParser {
 			flagSkip = false;
 			previousTag = currentTag;
 		}
+		
+		return currentTag;
 	}
 	
 	private void readFlow(XmlPullParser parser,String previousTag) throws XmlPullParserException, IOException{
 		final String  flowPreviousTag = previousTag;
 		parser.require(XmlPullParser.START_TAG, ns, "flow");
-		
+		ArrayList<String> flowTags = new ArrayList<String>();
 		while(parser.next() != XmlPullParser.END_TAG){
 			String tag = parser.getName();
 			if(parser.getEventType() != XmlPullParser.START_TAG){
 				continue;
 			}
 			if(tag.equals("sequence")){
-				readWorkFlowSequence(parser, flowPreviousTag ,XmlPullParser.END_TAG);
+				flowTags.add(readWorkFlowSequence(parser, flowPreviousTag ,XmlPullParser.END_TAG));
 			}
 		}
-		
-		parser.nextTag();
+		String tag = flowTags.remove(flowTags.size() -1 );
+		flowlastTags.put(tag, flowTags);
+		//parser.nextTag();
 	}
 	private String readInvoke(XmlPullParser parser)throws XmlPullParserException, IOException{
 		parser.require(XmlPullParser.START_TAG, ns, "invoke");
@@ -248,22 +268,7 @@ public class WorkFlowXmlParser {
 		return name;
 		
 	}
-//	private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
-//	    if (parser.getEventType() != XmlPullParser.START_TAG) {
-//	        throw new IllegalStateException();
-//	    }
-//	    int depth = 1;
-//	    while (depth != 0) {
-//	        switch (parser.next()) {
-//	        case XmlPullParser.END_TAG:
-//	            depth--;
-//	            break;
-//	        case XmlPullParser.START_TAG:
-//	            depth++;
-//	            break;
-//	        }
-//	    }
-//	 }
+
 
 }
 
