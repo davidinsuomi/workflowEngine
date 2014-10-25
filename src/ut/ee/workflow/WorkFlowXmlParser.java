@@ -23,6 +23,7 @@ import ut.ee.workflow.object.WorkFlowVariable;
 public class WorkFlowXmlParser {
 	private WorkFlowProcess workFlowProcess = new WorkFlowProcess();
 	private Map<String,ArrayList<String>> graphMap = new HashMap<String,ArrayList<String>>();
+	private Map<String,ArrayList<String>> graphMapBackword = new HashMap<String,ArrayList<String>>();
 	private Map<String,WorkFlowActivity> activityMap = new HashMap<String,WorkFlowActivity>();
 	private Map<String,ArrayList<String>> flowlastTags = new HashMap<String,ArrayList<String>>();
 	private String previousNodeName;
@@ -68,14 +69,34 @@ public class WorkFlowXmlParser {
 			Log.d("TAG", " VARIABLES" + workFlowProcess.variables.size());
 
 		}
-		
 		addMissingFlowTags();
-	
+		addMissingEndFlag();
+		parsingGraphMapBackword();
 		workFlowProcess.activityMap = activityMap;
 		workFlowProcess.graphMap = graphMap;
 		System.out.println();
 
 		
+	}
+	private  void addMissingEndFlag(){
+		graphMap.put(currentTag, new ArrayList<String>(Arrays.asList("ending")));
+		System.out.println();
+	}
+	private void parsingGraphMapBackword(){
+		for(Map.Entry<String, ArrayList<String>> entry: graphMap.entrySet()){
+			String key = entry.getKey();
+			ArrayList<String> nodes = entry.getValue();
+			for(String node: nodes){
+				if(graphMapBackword.containsKey(node)){
+					ArrayList<String> old = graphMapBackword.get(node);
+					old.add(key);
+					ArrayList<String> newList = new ArrayList<String>(old);
+					graphMapBackword.put(node, newList);
+				}else{
+					graphMapBackword.put(node, new ArrayList<String>(Arrays.asList(key)));
+				}
+			}
+		}
 	}
 	
 	private void addMissingFlowTags(){
