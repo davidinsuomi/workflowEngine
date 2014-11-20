@@ -74,6 +74,7 @@ public class WorkFlowXmlParser {
 		parsingGraphMapBackword();
 		workFlowProcess.activityMap = activityMap;
 		workFlowProcess.graphMap = graphMap;
+		workFlowProcess.graphMapBackword = graphMapBackword;
 		System.out.println();
 
 		
@@ -120,6 +121,7 @@ public class WorkFlowXmlParser {
 		String partnerLinkName = null;
 		String partnerLinkType = null;
 		String myRole = null;
+		String URL ="";
 		
 		while(parser.next() != XmlPullParser.END_TAG ){
 			if(parser.getEventType() != XmlPullParser.START_TAG){
@@ -131,11 +133,12 @@ public class WorkFlowXmlParser {
 				partnerLinkName = parser.getAttributeValue(ns, "name");
 				partnerLinkType = parser.getAttributeValue(ns, "partnerLinkType");
 				myRole = parser.getAttributeValue(ns, "myRole");
-				partnerLinks.add(new PartnerLink(partnerLinkName, partnerLinkType, myRole));
 				
 				if (parser.next() == XmlPullParser.TEXT) {
+					URL = parser.getText();
 			        parser.nextTag();
 			    }
+				partnerLinks.add(new PartnerLink(partnerLinkName, partnerLinkType, myRole, URL));
 				parser.next();
 				//parser.require(XmlPullParser.END_TAG, ns, "partnerLink");
 			}

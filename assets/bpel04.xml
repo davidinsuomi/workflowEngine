@@ -84,11 +84,23 @@
         messageType="tns:GetFileResponseMessage"/>
         <variable name="RRD3"
         messageType="tns:GetFileResponseMessage"/>
+		<variable name="RRD4"
+        messageType="tns:GetFileResponseMessage"/>
+        <variable name="RRD5"
+        messageType="tns:GetFileResponseMessage"/>
+		<variable name="RRD6"
+        messageType="tns:GetFileResponseMessage"/>
         
         <variable name="POSTData2Input"/>
         <variable name="POSTData2Output"/>
         <variable name="POSTData3Input"/>
         <variable name="POSTData3Output"/>
+		 <variable name="POSTData4Input"/>
+        <variable name="POSTData4Output"/>
+		 <variable name="POSTData5Input"/>
+        <variable name="POSTData5Output"/>
+		 <variable name="POSTData6Input"/>
+        <variable name="POSTData6Output"/>
     </variables>
     
     <!-- ================================================================= -->

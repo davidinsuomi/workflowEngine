@@ -4,10 +4,12 @@ public class PartnerLink {
 	public String name;
 	public String partnerLinkType;
 	public String myRole;
-	public PartnerLink(String _name, String _partnerLinkType, String _myRole){
+	public String URL;
+	public PartnerLink(String _name, String _partnerLinkType, String _myRole, String _URL){
 		name = _name;
 		partnerLinkType = _partnerLinkType;
 		myRole = _myRole;
+		URL = _URL;
 	}
 	@Override
 	public String toString() {
