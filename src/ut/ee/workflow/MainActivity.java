@@ -4,22 +4,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 import ut.ee.workflow.object.PartnerLink;
@@ -68,9 +63,18 @@ public class MainActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
+        //test workflow offloading
+        //===================
+        WorkFlowGenerate generate = new WorkFlowGenerate(workFlowProcess);
+        try {
+			generate.TaskToBeOffloading("getData2", "postData2");
+		} catch (IllegalArgumentException | IllegalStateException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        //===================
         System.out.println("exectuion the flow");
-        BeginWorkFlow(workFlowProcess);
+//        BeginWorkFlow(workFlowProcess);
     }
     
     public void BeginWorkFlow(WorkFlowProcess workflowProcess){
