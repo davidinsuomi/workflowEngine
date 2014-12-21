@@ -26,6 +26,7 @@ import ut.ee.workflow.object.WorkFlowVariable;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -43,11 +44,12 @@ public class MainActivity extends Activity {
 	private ArrayList<WorkFlowVariable> variables;
 	private ArrayList<PartnerLink> partnerLinks;
 	private static String TAG = "EXECUTION";
+	private AssetManager assetManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        AssetManager assetManager = getResources().getAssets();
+        assetManager = getResources().getAssets();
         InputStream inputStream = null;
         partnerLinksTextView = (TextView)findViewById(R.id.partnerLinks);
         variablesTextView =(TextView) findViewById(R.id.variables);
@@ -75,8 +77,26 @@ public class MainActivity extends Activity {
         //===================
         System.out.println("exectuion the flow");
 //        BeginWorkFlow(workFlowProcess);
+         new offloadingToServerAsyncTask().execute();
     }
-    
+    private class offloadingToServerAsyncTask extends AsyncTask<Void,Void,Void>{
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+	        try {
+				InputStream offloadingStream = assetManager.open("HelloWorld2.zip" );
+				OffloadingToServer offloadingToServer = new OffloadingToServer();
+				offloadingToServer.PostBPELtoServer("http://192.168.1.103/workflow/upload.php", offloadingStream);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        return null;
+		}
+
+
+    }
     public void BeginWorkFlow(WorkFlowProcess workflowProcess){
     	graphMap = workflowProcess.graphMap;
     	graphMapBackword = workflowProcess.graphMapBackword;
